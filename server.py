@@ -24,6 +24,7 @@ class Server:
         self.ADMIN_REGISTER_MSG = "!ADMIN"
         self.CHECK_ROLE_MSG = "!ROLE"
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
+        self.TIME = "!TIME"
 
         #*server setup
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -120,7 +121,7 @@ class Server:
                             conn.send("Wrong password!".encode(self.FORMAT))
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
-                        conn.send(f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.LIST_ALL_COMMANDS_MSG}".encode(self.FORMAT))
+                        conn.send(f"""USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}""".encode(self.FORMAT))
                         conn.send(f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}".encode(self.FORMAT))
 
                     elif msg == self.CHECK_ROLE_MSG:
@@ -129,6 +130,9 @@ class Server:
                         else:
                             conn.send("You have regular user role.".encode(self.FORMAT))
 
+                    elif msg == self.TIME:
+                        time_msg = time.strftime("%H:%M:%S", time.localtime())
+                        conn.send(f"[SERVER] Current time is {time_msg}".encode(self.FORMAT))
                     else:
                         msg_packet = self.append_messages(msg, display_name)
                         for client in self.clients_connected:
@@ -158,7 +162,7 @@ class Server:
                 conn, addr = self.server.accept()
                 thread = threading.Thread(target=self.handle_client, args=(conn, addr))
                 thread.start()
-                print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+                print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
             except:
                 print("[SERVER ERROR] Initializing server shutdown...")
 

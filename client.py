@@ -24,6 +24,7 @@ class Client:
         self.ADMIN_REGISTER_MSG = "!ADMIN"
         self.CHECK_ROLE_MSG = "!ROLE"
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
+        self.TIME = "!TIME"
 
     #* function for sending messages to the server
     def send_message(self, message):
@@ -85,6 +86,9 @@ class Client:
                 elif msg == self.LIST_ALL_COMMANDS_MSG:
                     self.send_message(self.LIST_ALL_COMMANDS_MSG)
                     self.receive_message()
+                    self.receive_message()
+                elif msg == self.TIME:
+                    self.send_message(self.TIME)
                     self.receive_message()
                 elif msg:
                     self.send_message(msg)
