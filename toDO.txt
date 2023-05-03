@@ -1,0 +1,7 @@
+- enable users to have a user name. DONE
+- make it possible for everyone to see other clients messages live -> with !CHAT command client creates a new terminal window which is of CHAT kind. DONE
+- make the chat update to restore all data that is from this run of the server. DONE
+- add different permission roles DONE
+- only admin can use special admin commands DONE
+- add !COMMANDS command that displays all available commands DONE
+-explore and try to implement the possibility of file-sharing between clients (through  the server)
