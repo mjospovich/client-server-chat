@@ -179,6 +179,7 @@ class Server:
 
     #*shutting down the server
     def shutdown(self):
+        self.save_data()
         self.server.close()
 
     #*saving data to file

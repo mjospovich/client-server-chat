@@ -57,17 +57,26 @@ class Client:
 
     #* setting up the client
     def setup_client(self):
-        self.client.connect(self.ADDR)
-        subprocess.call("sysConfig\clientConfig.bat", shell=True)
-        self.enter_credentials()
-        self.receive_message()
-        self.receive_message()
-
+        try:
+            self.client.connect(self.ADDR)
+            subprocess.call("sysConfig\clientConfig.bat", shell=True)
+            self.enter_credentials()
+            self.receive_message()
+            self.receive_message()
+            return True
+        
+        except:
+            return False
+        
     #* main function for running the client
     def run(self):
-        self.setup_client()
+        ok_check = self.setup_client()
 
-        while True:
+        if not ok_check:
+            print("[WRONG IP] Failed to connect to server.")
+            return
+
+        while ok_check:
             msg = input("> ")
             try:
                 if msg == self.DISCONNECT_MESSAGE:
@@ -103,10 +112,15 @@ class Client:
 
         print("Disconnected from the server...")
 
+def ask_ip():
+    subprocess.call(r"sysConfig\askIP.bat", shell=True)
+    ip = input("Enter the server ip: ")
+    return ip
+
 #* Create and run the chat client
 if __name__ == "__main__":
     #* setting the server and port
-    SERVER = socket.gethostbyname(socket.gethostname())
+    SERVER = ask_ip()
     PORT = 5050
 
     #* creating the client
