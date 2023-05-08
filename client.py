@@ -25,6 +25,7 @@ class Client:
         self.CHECK_ROLE_MSG = "!ROLE"
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
         self.TIME = "!TIME"
+        self.ALL_CONNECTIONS = "!CONNECTIONS"
 
     #* function for sending messages to the server
     def send_message(self, message):
@@ -88,6 +89,12 @@ class Client:
                 elif msg == self.ADMIN_REGISTER_MSG:
                     self.send_message(self.ADMIN_REGISTER_MSG)
                     self.enter_credentials()
+                    self.receive_message()
+                elif msg == self.SERVER_SHUTDOWN_MSG:
+                    self.send_message(self.SERVER_SHUTDOWN_MSG)
+                    self.receive_message()
+                elif msg == self.ALL_CONNECTIONS:
+                    self.send_message(self.ALL_CONNECTIONS)
                     self.receive_message()
                 elif msg == self.CHECK_ROLE_MSG:
                     self.send_message(self.CHECK_ROLE_MSG)

@@ -25,6 +25,7 @@ class Server:
         self.CHECK_ROLE_MSG = "!ROLE"
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
         self.TIME = "!TIME"
+        self.ALL_CONNECTIONS = "!CONNECTIONS"
 
         #*server setup
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -86,7 +87,7 @@ class Server:
 
                     if msg == self.DISCONNECT_MESSAGE:
                         report = f"{display_name} has disconnected."
-                        print(f"[NEW DISCONNECT] {display_name} disconnected")
+                        print(f"[NEW DISCONNECT] {addr} disconnected")
                         self.clients_connected.remove((conn, addr, username, admin))
 
                         for client in self.clients_connected:
@@ -102,6 +103,16 @@ class Server:
                             print(f"[SERVER SHUTDOWN] {display_name} has shutdown the server")
                             connected = False
                             self.shutdown()
+                        else:
+                            conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
+
+                    elif msg == self.ALL_CONNECTIONS:
+                        if admin:
+                            #making the report
+                            connections = [f"({client[1]} {client[2]})" for client in self.clients_connected]
+                            connections_report = "\n" + "\n".join(connections)
+                            #sending the report
+                            conn.send(f"Currently connected clients: {connections_report}".encode(self.FORMAT))
                         else:
                             conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
 
@@ -123,7 +134,7 @@ class Server:
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
                         conn.send(f"""USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}""".encode(self.FORMAT))
-                        conn.send(f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}".encode(self.FORMAT))
+                        conn.send(f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}".encode(self.FORMAT))
 
                     elif msg == self.CHECK_ROLE_MSG:
                         if admin:
