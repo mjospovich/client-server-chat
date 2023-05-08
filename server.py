@@ -95,6 +95,7 @@ class Server:
                                 self.update_chat(report, (conn_chat, addr_chat))
 
                         connected = False
+                        print(self.check_active_connections(disconnect=True))
 
                     elif msg == self.SERVER_SHUTDOWN_MSG:
                         if admin:
@@ -150,6 +151,12 @@ class Server:
 
         conn.close()
 
+    #* checking the number of active connections
+    def check_active_connections(self, disconnect=False):
+        if disconnect:
+            return f"[ACTIVE CONNECTIONS] {threading.active_count() - 2}"
+        return f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}"
+
     #*starting up the server and handling connections
     def start(self):
         self.server.listen()
@@ -162,7 +169,7 @@ class Server:
                 conn, addr = self.server.accept()
                 thread = threading.Thread(target=self.handle_client, args=(conn, addr))
                 thread.start()
-                print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+                print(self.check_active_connections())
             except:
                 print("[SERVER ERROR] Initializing server shutdown...")
 
