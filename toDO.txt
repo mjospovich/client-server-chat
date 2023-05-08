@@ -5,4 +5,6 @@
 - only admin can use special admin commands DONE
 - add !COMMANDS command that displays all available commands DONE
 - fix issues with checking wrong address
+- add ability to close the chat by command
+- make one unable to open multiple chats
 -explore and try to implement the possibility of file-sharing between clients (through  the server)
