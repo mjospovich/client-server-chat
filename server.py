@@ -46,16 +46,19 @@ class Server:
 
     #*handling clients
     def handle_client(self, conn, addr):
-        print(f"[NEW CONNECTION] {addr} connected.")
-
+        
         try:
             conn.send("askUSERNAME".encode(self.FORMAT))
             username = conn.recv(1024).decode(self.FORMAT)
             display_name = username.split("===")[0]
 
             if "CHAT" not in username:
+                print(f"[NEW CONNECTION] {addr} connected.")
                 conn.send(f"Hey {display_name}, you are connected to server.".encode(self.FORMAT))
                 conn.send("Type !COMMANDS to see all available commands!".encode(self.FORMAT))
+
+            else:
+                print(f"[NEW CHAT CONNECTION] {addr} connected.")
 
         except:
             print("[SERVER ERROR] Failed to get username from client.")
@@ -155,6 +158,7 @@ class Server:
             except:
                 if "CHAT" in username:
                     print(f"[CONNECTING ERROR] Chat '{username}' window has lost connection.")
+                    self.clients_connected.remove((conn, addr, username, admin))
                     connected = False
                 else:
                     print(f"[CONNECTING ERROR] Connection to {addr} lost.")
