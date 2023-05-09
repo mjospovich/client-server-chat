@@ -20,7 +20,7 @@ class Server:
         self.PASSWORD = "vodabaska23"
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
         self.SERVER_SHUTDOWN_MSG = "!SHUTDOWN"
-        self.CHAT_OPEN_MSG = "!CHAT"
+        self.CHAT_MSG = "!CHAT"
         self.ADMIN_REGISTER_MSG = "!ADMIN"
         self.CHECK_ROLE_MSG = "!ROLE"
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
@@ -37,6 +37,16 @@ class Server:
         self.clients_connected = []
         self.len_clients_connected = 0
 
+    #*function that checks if a client has a chat open (by ip address)
+    def check_chat_opened(self, addr):
+        for client in self.clients_connected:
+            if client[1][0] == addr[0]:
+                if "CHAT" in client[2]:
+                    return True
+                else:
+                    continue
+        return False
+
     #*function for appending recieved messages to list
     def append_messages(self, msg, username):
         time_msg = time.strftime("%H:%M:%S", time.localtime())
@@ -46,7 +56,7 @@ class Server:
 
     #*handling clients
     def handle_client(self, conn, addr):
-        
+
         try:
             conn.send("askUSERNAME".encode(self.FORMAT))
             username = conn.recv(1024).decode(self.FORMAT)
@@ -119,8 +129,14 @@ class Server:
                         else:
                             conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
 
-                    elif msg == self.CHAT_OPEN_MSG:
-                        print(f"[CHAT OPEN] {display_name} has opened the chat window")
+                    elif msg == self.CHAT_MSG:
+                        #opens the chat if it's not already opened for the client (if they have the same address) else closes it
+                        if not self.check_chat_opened(addr):
+                            conn.send("openCHAT".encode(self.FORMAT))
+                            print(f"[CHAT OPEN] {display_name} has opened the chat window")
+                        else:
+                            conn.send("closeCHAT".encode(self.FORMAT))
+                            print(f"[CHAT CLOSED] {display_name} has closed the chat window")
 
                     elif msg == self.ADMIN_REGISTER_MSG:
                         conn.send("askPASSWORD".encode(self.FORMAT))

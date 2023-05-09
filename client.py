@@ -20,7 +20,7 @@ class Client:
         #* command messages
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
         self.SERVER_SHUTDOWN_MSG = "!SHUTDOWN"
-        self.CHAT_OPEN_MSG = "!CHAT"
+        self.CHAT_MSG = "!CHAT"
         self.ADMIN_REGISTER_MSG = "!ADMIN"
         self.CHECK_ROLE_MSG = "!ROLE"
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
@@ -83,8 +83,9 @@ class Client:
                 if msg == self.DISCONNECT_MESSAGE:
                     self.send_message(self.DISCONNECT_MESSAGE)
                     break
-                elif msg == self.CHAT_OPEN_MSG:
-                    self.send_message(self.CHAT_OPEN_MSG)
+                elif msg == self.CHAT_MSG:
+                    self.send_message(self.CHAT_MSG)
+                    self.receive_message()
                     subprocess.call("sysConfig\openChat.bat", shell=True)
                 elif msg == self.ADMIN_REGISTER_MSG:
                     self.send_message(self.ADMIN_REGISTER_MSG)
