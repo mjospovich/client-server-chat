@@ -7,5 +7,5 @@
 - fix issues with checking wrong address
 - add ability to close the chat by command
 - make one unable to open multiple chats
-- fix issue when chats stay in connected users when they are force shut
+- fix issue when chats stay in connected users when they are force shut DONE
 -explore and try to implement the possibility of file-sharing between clients (through  the server)
