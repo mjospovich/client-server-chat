@@ -85,8 +85,15 @@ class Client:
                     break
                 elif msg == self.CHAT_MSG:
                     self.send_message(self.CHAT_MSG)
-                    self.receive_message()
-                    subprocess.call("sysConfig\openChat.bat", shell=True)
+                    server_msg = self.receive_message(ret = True)
+                    
+                    if server_msg == "openCHAT":
+                        subprocess.call("sysConfig\openChat.bat", shell=True)
+                    elif server_msg == "closeCHAT":
+                        subprocess.call("sysConfig\closeChat.bat", shell=True)
+                    else:
+                        print("Something went wrong!")
+                    
                 elif msg == self.ADMIN_REGISTER_MSG:
                     self.send_message(self.ADMIN_REGISTER_MSG)
                     self.enter_credentials()
