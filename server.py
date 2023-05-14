@@ -1,3 +1,4 @@
+from cryptography.fernet import Fernet
 import threading
 import socket
 import time
@@ -17,7 +18,7 @@ class Server:
         self.FORMAT = "utf-8"
 
         #*command messages
-        self.PASSWORD = "vodabaska23"
+        self.PASSWORD = ""
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
         self.SERVER_SHUTDOWN_MSG = "!SHUTDOWN"
         self.CHAT_MSG = "!CHAT"
@@ -36,6 +37,21 @@ class Server:
         self.messages_received = []
         self.clients_connected = []
         self.len_clients_connected = 0
+
+    #*function that gets the password from encrypted file using key
+    def get_password(self):
+        #get the key from key.key file
+        with open("keys\key.key", "rb") as f:
+            key = f.read()
+
+        #decrypt the password from pass.key file
+        with open("keys\pass.key", "rb") as f:
+            data = f.read()
+
+        fernet = Fernet(key)
+        decrypted = fernet.decrypt(data)
+        return decrypted.decode()
+
 
     #*function that checks if a client has a chat open (by ip address)
     def check_chat_opened(self, addr):
@@ -141,6 +157,7 @@ class Server:
                     elif msg == self.ADMIN_REGISTER_MSG:
                         conn.send("askPASSWORD".encode(self.FORMAT))
                         password = conn.recv(1024).decode(self.FORMAT)
+                        self.PASSWORD = self.get_password()
 
                         if password == self.PASSWORD:
                             conn.send("Correct password, access gained!".encode(self.FORMAT))
@@ -150,6 +167,8 @@ class Server:
                             self.clients_connected.append((conn, addr, username, admin))
                         else:
                             conn.send("Wrong password!".encode(self.FORMAT))
+                        
+                        self.PASSWORD = ""
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
                         conn.send(f"""USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}""".encode(self.FORMAT))
