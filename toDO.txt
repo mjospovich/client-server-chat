@@ -8,6 +8,7 @@
 - add ability to close the chat by command DONE
 - make one unable to open multiple chats DONE
 - make it so that the success report doesn't show to client
-- make admin password in seperate file stored and encrypted
+- make it so that u cannot register as admin if you already are
+- make admin password in seperate file stored and encrypted DONE
 - fix issue when chats stay in connected users when they are force shut DONE
 -explore and try to implement the possibility of file-sharing between clients (through  the server)
