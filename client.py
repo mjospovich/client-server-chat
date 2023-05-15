@@ -106,7 +106,7 @@ class Client:
                         self.receive_message()
                     else:
                         print("Something went wrong!")
-                        
+
                 elif msg == self.SERVER_SHUTDOWN_MSG:
                     self.send_message(self.SERVER_SHUTDOWN_MSG)
                     self.receive_message()
@@ -122,6 +122,9 @@ class Client:
                     self.receive_message()
                 elif msg == self.TIME:
                     self.send_message(self.TIME)
+                    self.receive_message()
+                elif "!" == msg[0]:
+                    self.send_message(msg)
                     self.receive_message()
                 elif msg:
                     self.send_message(msg)

@@ -188,11 +188,15 @@ class Server:
                         time_msg = time.strftime("%H:%M:%S", time.localtime())
                         conn.send(f"[SERVER] Current time is {time_msg}".encode(self.FORMAT))
                     else:
-                        msg_packet = self.append_messages(msg, display_name)
-                        for client in self.clients_connected:
-                            if "CHAT" in client[2]:
-                                conn_chat, addr_chat, _, _ = client
-                                self.update_chat(msg_packet, (conn_chat, addr_chat))
+                        if "!" == msg[0]:
+                            conn.send("Unknown command!".encode(self.FORMAT))
+
+                        else:
+                            msg_packet = self.append_messages(msg, display_name)
+                            for client in self.clients_connected:
+                                if "CHAT" in client[2]:
+                                    conn_chat, addr_chat, _, _ = client
+                                    self.update_chat(msg_packet, (conn_chat, addr_chat))
 
             except:
                 if "CHAT" in username:
