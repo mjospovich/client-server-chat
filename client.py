@@ -83,6 +83,7 @@ class Client:
                 if msg == self.DISCONNECT_MESSAGE:
                     self.send_message(self.DISCONNECT_MESSAGE)
                     break
+                
                 elif msg == self.CHAT_MSG:
                     self.send_message(self.CHAT_MSG)
                     server_msg = self.receive_message(ret = True)
@@ -110,26 +111,34 @@ class Client:
                 elif msg == self.SERVER_SHUTDOWN_MSG:
                     self.send_message(self.SERVER_SHUTDOWN_MSG)
                     self.receive_message()
+
                 elif msg == self.ALL_CONNECTIONS:
                     self.send_message(self.ALL_CONNECTIONS)
                     self.receive_message()
+
                 elif msg == self.CHECK_ROLE_MSG:
                     self.send_message(self.CHECK_ROLE_MSG)
                     self.receive_message()
+
                 elif msg == self.LIST_ALL_COMMANDS_MSG:
                     self.send_message(self.LIST_ALL_COMMANDS_MSG)
                     self.receive_message()
                     self.receive_message()
+
                 elif msg == self.TIME:
                     self.send_message(self.TIME)
                     self.receive_message()
+
                 elif "!" == msg[0]:
                     self.send_message(msg)
                     self.receive_message()
+
                 elif msg:
                     self.send_message(msg)
+
                 else:
                     pass
+
             except ConnectionResetError:
                 print("You lost connection to the server!")
                 break
