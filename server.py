@@ -155,23 +155,27 @@ class Server:
                             print(f"[CHAT CLOSED] {display_name} has closed the chat window")
 
                     elif msg == self.ADMIN_REGISTER_MSG:
-                        conn.send("askPASSWORD".encode(self.FORMAT))
-                        password = conn.recv(1024).decode(self.FORMAT)
-                        self.PASSWORD = self.get_password()
-
-                        if password == self.PASSWORD:
-                            conn.send("Correct password, access gained!".encode(self.FORMAT))
-                            print(f"[ADMIN] Admin has registered to the server as {display_name}.")
-                            self.clients_connected.remove((conn, addr, username, admin))
-                            admin = True
-                            self.clients_connected.append((conn, addr, username, admin))
+                        if admin:
+                            conn.send("isADMIN".encode(self.FORMAT))
                         else:
-                            conn.send("Wrong password!".encode(self.FORMAT))
-                        
-                        self.PASSWORD = ""
+                            conn.send("isNOTADMIN".encode(self.FORMAT))
+                            conn.send("askPASSWORD".encode(self.FORMAT))
+                            password = conn.recv(1024).decode(self.FORMAT)
+                            self.PASSWORD = self.get_password()
+
+                            if password == self.PASSWORD:
+                                conn.send("Correct password, access gained!".encode(self.FORMAT))
+                                print(f"[ADMIN] Admin has registered to the server as {display_name}.")
+                                self.clients_connected.remove((conn, addr, username, admin))
+                                admin = True
+                                self.clients_connected.append((conn, addr, username, admin))
+                            else:
+                                conn.send("Wrong password!".encode(self.FORMAT))
+                            
+                            self.PASSWORD = ""
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
-                        conn.send(f"""USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}""".encode(self.FORMAT))
+                        conn.send(f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}".encode(self.FORMAT))
                         conn.send(f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}".encode(self.FORMAT))
 
                     elif msg == self.CHECK_ROLE_MSG:

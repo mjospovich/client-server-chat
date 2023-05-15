@@ -96,8 +96,17 @@ class Client:
                     
                 elif msg == self.ADMIN_REGISTER_MSG:
                     self.send_message(self.ADMIN_REGISTER_MSG)
-                    self.enter_credentials()
-                    self.receive_message()
+                    admin_check = self.receive_message(ret = True)
+                    
+                    if admin_check == "isADMIN":
+                        print("You are already an admin!")
+
+                    elif admin_check == "isNOTADMIN":
+                        self.enter_credentials()
+                        self.receive_message()
+                    else:
+                        print("Something went wrong!")
+                        
                 elif msg == self.SERVER_SHUTDOWN_MSG:
                     self.send_message(self.SERVER_SHUTDOWN_MSG)
                     self.receive_message()
