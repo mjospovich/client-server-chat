@@ -27,6 +27,7 @@ class Server:
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
         self.TIME = "!TIME"
         self.ALL_CONNECTIONS = "!CONNECTIONS"
+        self.SAVECHAT = "!SAVECHAT"
 
         #*server setup
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -187,6 +188,15 @@ class Server:
                     elif msg == self.TIME:
                         time_msg = time.strftime("%H:%M:%S", time.localtime())
                         conn.send(f"[SERVER] Current time is {time_msg}".encode(self.FORMAT))
+                    
+                    elif msg == self.SAVECHAT:
+                        if admin:
+                            self.save_data(temp=True)
+                            conn.send("Chat data saved!".encode(self.FORMAT))
+                            print("[SAVE] Chat data saved to file!")
+                        else:
+                            conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
+
                     else:
                         if "!" == msg[0]:
                             conn.send("Unknown command!".encode(self.FORMAT))
@@ -240,7 +250,6 @@ class Server:
                 break
 
         print("[SERVER CLOSED] Server is closed.")
-        self.save_data()
 
     #*shutting down the server
     def shutdown(self):
@@ -248,10 +257,15 @@ class Server:
         self.server.close()
 
     #*saving data to file
-    def save_data(self):
-        with open("clientServer\data.txt", "a") as file:
-            for msg in self.messages_received:
-                file.write(f"{msg}\r")
+    def save_data(self, temp=False):
+        if temp:
+            with open(r"data\temp_data.txt", "w") as file:
+                for msg in self.messages_received:
+                    file.write(f"{msg}\r")
+        else:
+            with open(r"data\data.txt", "a") as file:
+                for msg in self.messages_received:
+                    file.write(f"{msg}\r")
 
     #*updating chat window
     def update_chat(self, msg, chat):

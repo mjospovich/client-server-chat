@@ -26,6 +26,7 @@ class Client:
         self.LIST_ALL_COMMANDS_MSG = "!COMMANDS"
         self.TIME = "!TIME"
         self.ALL_CONNECTIONS = "!CONNECTIONS"
+        self.SAVECHAT = "!SAVECHAT"
 
     #* function for sending messages to the server
     def send_message(self, message):
@@ -127,6 +128,10 @@ class Client:
 
                 elif msg == self.TIME:
                     self.send_message(self.TIME)
+                    self.receive_message()
+                
+                elif msg == self.SAVECHAT:
+                    self.send_message(self.SAVECHAT)
                     self.receive_message()
 
                 elif "!" == msg[0]:
