@@ -4,14 +4,16 @@
 - add different permission roles DONE
 - only admin can use special admin commands DONE
 - add !COMMANDS command that displays all available commands DONE
-- fix issues with checking wrong address
+- fix issues with checking wrong address by somehow giving feedback that the ip is wrong ?
 - add ability to close the chat by command DONE
 - make one unable to open multiple chats DONE
-- make it so that the success report doesn't show to client
+- make it so that the PID success report for closing the chat doesn't show to client ?
 - make it so that u cannot register as admin if you already are DONE
 - make admin password in seperate file stored and encrypted DONE
 - make it so that messages starting with "!" are view as commands only DONE
 - fix issue when chats stay in connected users when they are force shut DONE
-- fix issue with !COMMANDS not working
+- fix issue with !COMMANDS not working ?
+- add ability for admin to save current chat DONE
+- add server logging to file
 - find and fix issue with some combinations of commands cause issue with receiving messages 
 - explore and try to implement the possibility of file-sharing between clients (through  the server)
