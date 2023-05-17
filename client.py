@@ -39,7 +39,7 @@ class Client:
 
     #* receiving messages from the server
     def receive_message(self, ret=False):
-        msg = self.client.recv(2048).decode(self.FORMAT)
+        msg = self.client.recv(4096).decode(self.FORMAT)
         if not ret:
             if msg:
                 print(msg)

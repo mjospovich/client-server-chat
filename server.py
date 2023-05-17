@@ -180,8 +180,8 @@ class Server:
                             self.PASSWORD = ""
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
-                        self.send_msg(conn, f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}")
-                        self.send_msg(conn, f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}")
+                        self.send_msg(conn, f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}")
+                        self.send_msg(conn, f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}, {self.SAVECHAT}")
             
                     elif msg == self.CHECK_ROLE_MSG:
                         if admin:
