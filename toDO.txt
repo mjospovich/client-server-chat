@@ -14,6 +14,8 @@
 - fix issue when chats stay in connected users when they are force shut DONE
 - fix issue with !COMMANDS not working ?
 - add ability for admin to save current chat DONE
+- make func for server sending msgs to clients DONE
+- make func for server logging to terminal
 - add server logging to file
-- find and fix issue with some combinations of commands cause issue with receiving messages 
+- find and fix issue with some combinations of commands cause issue with receiving messages ?
 - explore and try to implement the possibility of file-sharing between clients (through  the server)
