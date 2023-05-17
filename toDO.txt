@@ -12,7 +12,7 @@
 - make admin password in seperate file stored and encrypted DONE
 - make it so that messages starting with "!" are view as commands only DONE
 - fix issue when chats stay in connected users when they are force shut DONE
-- fix issue with !COMMANDS not working ?
+- fix issue with !COMMANDS not working DONE
 - add ability for admin to save current chat DONE
 - make func for server sending msgs to clients DONE
 - make func for server logging to terminal
