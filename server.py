@@ -71,18 +71,22 @@ class Server:
         self.messages_received.append(msg_packet)
         return msg_packet
 
+    #* function for sending message to the client
+    def send_msg(self, conn, msg):
+        conn.send(msg.encode(self.FORMAT))
+
     #*handling clients
     def handle_client(self, conn, addr):
 
         try:
-            conn.send("askUSERNAME".encode(self.FORMAT))
+            self.send_msg(conn, "askUSERNAME")
             username = conn.recv(1024).decode(self.FORMAT)
             display_name = username.split("===")[0]
 
             if "CHAT" not in username:
                 print(f"[NEW CONNECTION] {addr} connected.")
-                conn.send(f"Hey {display_name}, you are connected to server.".encode(self.FORMAT))
-                conn.send("Type !COMMANDS to see all available commands!".encode(self.FORMAT))
+                self.send_msg(conn, f"Hey {display_name}, you are connected to server.")
+                self.send_msg(conn, "Type !COMMANDS to see all available commands!")
 
             else:
                 print(f"[NEW CHAT CONNECTION] {addr} connected.")
@@ -93,7 +97,7 @@ class Server:
 
         if "CHAT" in username:
             for message in self.messages_received:
-                conn.send(message.encode(self.FORMAT))
+                self.send_msg(conn, message)
                 time.sleep(0.1)
 
         admin = False
@@ -134,7 +138,7 @@ class Server:
                             connected = False
                             self.shutdown()
                         else:
-                            conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
+                            self.send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
 
                     elif msg == self.ALL_CONNECTIONS:
                         if admin:
@@ -142,64 +146,64 @@ class Server:
                             connections = [f"({client[1]} {client[2]})" for client in self.clients_connected]
                             connections_report = "\n" + "\n".join(connections)
                             #sending the report
-                            conn.send(f"Currently connected clients: {connections_report}".encode(self.FORMAT))
+                            self.send_msg(conn, f"Currently connected clients: {connections_report}")
                         else:
-                            conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
+                            self.send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
 
                     elif msg == self.CHAT_MSG:
                         #opens the chat if it's not already opened for the client (if they have the same address) else closes it
                         if not self.check_chat_opened(addr):
-                            conn.send("openCHAT".encode(self.FORMAT))
+                            self.send_msg(conn, "openCHAT")
                             print(f"[CHAT OPEN] {display_name} has opened the chat window")
                         else:
-                            conn.send("closeCHAT".encode(self.FORMAT))
+                            self.send_msg(conn, "closeCHAT")
                             print(f"[CHAT CLOSED] {display_name} has closed the chat window")
 
                     elif msg == self.ADMIN_REGISTER_MSG:
                         if admin:
-                            conn.send("isADMIN".encode(self.FORMAT))
+                            self.send_msg(conn, "isADMIN")
                         else:
-                            conn.send("isNOTADMIN".encode(self.FORMAT))
-                            conn.send("askPASSWORD".encode(self.FORMAT))
+                            self.send_msg(conn, "isNOTADMIN")
+                            self.send_msg(conn, "askPASSWORD")
                             password = conn.recv(1024).decode(self.FORMAT)
                             self.PASSWORD = self.get_password()
 
                             if password == self.PASSWORD:
-                                conn.send("Correct password, access gained!".encode(self.FORMAT))
+                                self.send_msg(conn, "Correct password, access gained!")
                                 print(f"[ADMIN] Admin has registered to the server as {display_name}.")
                                 self.clients_connected.remove((conn, addr, username, admin))
                                 admin = True
                                 self.clients_connected.append((conn, addr, username, admin))
                             else:
-                                conn.send("Wrong password!".encode(self.FORMAT))
+                                self.send_msg(conn, "Wrong password!")
                             
                             self.PASSWORD = ""
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
-                        conn.send(f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}".encode(self.FORMAT))
-                        conn.send(f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}".encode(self.FORMAT))
-
+                        self.send_msg(conn, f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_OPEN_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}")
+                        self.send_msg(conn, f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}")
+            
                     elif msg == self.CHECK_ROLE_MSG:
                         if admin:
-                            conn.send("You have administrator role.".encode(self.FORMAT))
+                            self.send_msg(conn, "You have administrator role.")
                         else:
-                            conn.send("You have regular user role.".encode(self.FORMAT))
+                            self.send_msg(conn, "You have regular user role.")
 
                     elif msg == self.TIME:
                         time_msg = time.strftime("%H:%M:%S", time.localtime())
-                        conn.send(f"[SERVER] Current time is {time_msg}".encode(self.FORMAT))
+                        self.send_msg(conn, f"[SERVER] Current time is {time_msg}")
                     
                     elif msg == self.SAVECHAT:
                         if admin:
                             self.save_data(temp=True)
-                            conn.send("Chat data saved!".encode(self.FORMAT))
+                            self.send_msg(conn, "Chat data saved!")
                             print("[SAVE] Chat data saved to file!")
                         else:
-                            conn.send("You are not an admin, hence you don't possess the power to do this!".encode(self.FORMAT))
+                            self.send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
 
                     else:
                         if "!" == msg[0]:
-                            conn.send("Unknown command!".encode(self.FORMAT))
+                            self.send_msg(conn, "Unknown command!")
 
                         else:
                             msg_packet = self.append_messages(msg, display_name)
