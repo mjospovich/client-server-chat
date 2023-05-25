@@ -74,31 +74,42 @@ class Server:
     #* function for sending message to the client
     def send_msg(self, conn, msg):
         conn.send(msg.encode(self.FORMAT))
+    
+    #* function for printing server messages
+    def server_log(self, tag, msg):
+        print(f"[{tag.upper()}] {msg}")
 
     #*handling clients
     def handle_client(self, conn, addr):
 
+        #* setting aliases for functions
+        send_msg = self.send_msg
+        server_log = self.server_log
+
+        #* setting common response messages
+        not_admin_msg = "You are not an admin, hence you don't possess the power to do this!"
+
         try:
-            self.send_msg(conn, "askUSERNAME")
+            send_msg(conn, "askUSERNAME")
             username = conn.recv(1024).decode(self.FORMAT)
             display_name = username.split("===")[0]
 
             if "CHAT" not in username:
-                print(f"[NEW CONNECTION] {addr} connected.")
-                self.send_msg(conn, f"Hey {display_name}, you are connected to server.")
-                self.send_msg(conn, "Type !COMMANDS to see all available commands!")
+                server_log("new connection", f"{addr} has connected to the server.")
+                send_msg(conn, f"Hey {display_name}, you are connected to server.")
+                send_msg(conn, "Type !COMMANDS to see all available commands!")
 
             else:
-                print(f"[NEW CHAT CONNECTION] {addr} connected.")
+                server_log("new chat connection", f"{addr} has connected to the server.")
 
         except:
-            print("[SERVER ERROR] Failed to get username from client.")
+            server_log("server error", f"Failed to get username from client.")
             conn.close()
 
         if "CHAT" in username:
             for message in self.messages_received:
-                self.send_msg(conn, message)
-                time.sleep(0.1)
+                send_msg(conn, message)
+                time.sleep(0.15)
 
         admin = False
         self.clients_connected.append((conn, addr, username, admin))
@@ -121,7 +132,7 @@ class Server:
 
                     if msg == self.DISCONNECT_MESSAGE:
                         report = f"{display_name} has disconnected."
-                        print(f"[NEW DISCONNECT] {addr} disconnected")
+                        server_log("new disconnect", f"{addr} disconnected")
                         self.clients_connected.remove((conn, addr, username, admin))
 
                         for client in self.clients_connected:
@@ -134,11 +145,11 @@ class Server:
 
                     elif msg == self.SERVER_SHUTDOWN_MSG:
                         if admin:
-                            print(f"[SERVER SHUTDOWN] {display_name} has shutdown the server")
+                            server_log("server shutdown", f"{display_name} has shutdown the server")
                             connected = False
                             self.shutdown()
                         else:
-                            self.send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
+                            send_msg(conn, not_admin_msg)
 
                     elif msg == self.ALL_CONNECTIONS:
                         if admin:
@@ -146,64 +157,64 @@ class Server:
                             connections = [f"({client[1]} {client[2]})" for client in self.clients_connected]
                             connections_report = "\n" + "\n".join(connections)
                             #sending the report
-                            self.send_msg(conn, f"Currently connected clients: {connections_report}")
+                            send_msg(conn, f"Currently connected clients: {connections_report}")
                         else:
-                            self.send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
+                            send_msg(conn, not_admin_msg)
 
                     elif msg == self.CHAT_MSG:
                         #opens the chat if it's not already opened for the client (if they have the same address) else closes it
                         if not self.check_chat_opened(addr):
                             self.send_msg(conn, "openCHAT")
-                            print(f"[CHAT OPEN] {display_name} has opened the chat window")
+                            server_log("chat open", f"{display_name} has opened the chat window")
                         else:
                             self.send_msg(conn, "closeCHAT")
-                            print(f"[CHAT CLOSED] {display_name} has closed the chat window")
+                            server_log("chat closed", f"{display_name} has closed the chat window")
 
                     elif msg == self.ADMIN_REGISTER_MSG:
                         if admin:
-                            self.send_msg(conn, "isADMIN")
+                            send_msg(conn, "isADMIN")
                         else:
-                            self.send_msg(conn, "isNOTADMIN")
-                            self.send_msg(conn, "askPASSWORD")
+                            send_msg(conn, "isNOTADMIN")
+                            send_msg(conn, "askPASSWORD")
                             password = conn.recv(1024).decode(self.FORMAT)
                             self.PASSWORD = self.get_password()
 
                             if password == self.PASSWORD:
-                                self.send_msg(conn, "Correct password, access gained!")
-                                print(f"[ADMIN] Admin has registered to the server as {display_name}.")
+                                send_msg(conn, "Correct password, access gained!")
+                                server_log("admin register", f"{display_name} has registered as admin.")
                                 self.clients_connected.remove((conn, addr, username, admin))
                                 admin = True
                                 self.clients_connected.append((conn, addr, username, admin))
                             else:
-                                self.send_msg(conn, "Wrong password!")
+                                send_msg(conn, "Wrong password!")
                             
                             self.PASSWORD = ""
 
                     elif msg == self.LIST_ALL_COMMANDS_MSG:
-                        self.send_msg(conn, f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}")
-                        self.send_msg(conn, f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}, {self.SAVECHAT}")
+                        send_msg(conn, f"USER COMMANDS: {self.DISCONNECT_MESSAGE}, {self.CHAT_MSG}, {self.CHECK_ROLE_MSG}, {self.TIME}, {self.LIST_ALL_COMMANDS_MSG}")
+                        send_msg(conn, f"ADMIN COMMANDS: {self.SERVER_SHUTDOWN_MSG}, {self.ADMIN_REGISTER_MSG}, {self.ALL_CONNECTIONS}, {self.SAVECHAT}")
             
                     elif msg == self.CHECK_ROLE_MSG:
                         if admin:
-                            self.send_msg(conn, "You have administrator role.")
+                            send_msg(conn, "You have administrator role.")
                         else:
-                            self.send_msg(conn, "You have regular user role.")
+                            send_msg(conn, "You have regular user role.")
 
                     elif msg == self.TIME:
                         time_msg = time.strftime("%H:%M:%S", time.localtime())
-                        self.send_msg(conn, f"[SERVER] Current time is {time_msg}")
+                        send_msg(conn, f"[SERVER] Current time is {time_msg}")
                     
                     elif msg == self.SAVECHAT:
                         if admin:
                             self.save_data(temp=True)
-                            self.send_msg(conn, "Chat data saved!")
-                            print("[SAVE] Chat data saved to file!")
+                            send_msg(conn, "Chat data saved!")
+                            server_log("save", f"{display_name} has saved the chat data to file.")
                         else:
-                            self.send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
+                            send_msg(conn, "You are not an admin, hence you don't possess the power to do this!")
 
                     else:
                         if "!" == msg[0]:
-                            self.send_msg(conn, "Unknown command!")
+                            send_msg(conn, "Unknown command!")
 
                         else:
                             msg_packet = self.append_messages(msg, display_name)
@@ -214,11 +225,11 @@ class Server:
 
             except:
                 if "CHAT" in username:
-                    print(f"[CONNECTING ERROR] Chat '{username}' window has lost connection.")
+                    server_log("connecting error", f"Chat '{username}' window has lost connection.")
                     self.clients_connected.remove((conn, addr, username, admin))
                     connected = False
                 else:
-                    print(f"[CONNECTING ERROR] Connection to {addr} lost.")
+                    server_log("connecting error", f"{addr} has lost connection.")
                     connected = False
 
         conn.close()
