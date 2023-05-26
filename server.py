@@ -274,7 +274,8 @@ class Server:
     #*saving data to file
     def save_data(self, temp=False):
         if temp:
-            with open(r"data\temp_data.txt", "w") as file:
+            file_name = time.strftime("%d-%m-%Y_%H-%M", time.localtime()) + ".txt"
+            with open(rf"data\{file_name}.txt", "w") as file:
                 for msg in self.messages_received:
                     file.write(f"{msg}\r")
         else:
