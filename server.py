@@ -247,7 +247,7 @@ class Server:
     #*starting up the server and handling connections
     def start(self):
         self.server.listen()
-        print(f"[LISTENING] Server is listening on {self.SERVER}")
+        self.server_log("listening", f"Server is listening on {self.SERVER}")
 
         while True:
             self.len_clients_connected = len(self.clients_connected)
@@ -258,17 +258,17 @@ class Server:
                 thread.start()
                 print(self.check_active_connections())
             except:
-                print("[SERVER ERROR] Initializing server shutdown...")
+                self.server_log("server shutdown", "Initializing server shutdown...")
 
                 if self.clients_connected:
-                    print("[SERVER ERROR] Closing connections to clients...")
+                    self.server_log("server shutdown", "Closing connections to clients...")
                     for client in self.clients_connected:
                         conn, addr, _, _ = client
                         conn.close()
 
                 break
 
-        print("[SERVER CLOSED] Server is closed.")
+        self.server_log("server closed", "Server has been closed.")
 
     #*shutting down the server
     def shutdown(self):
@@ -291,6 +291,7 @@ class Server:
     #*save server logs to file
     def save_logs(self):
         with open(r"data\logs.log", "a") as file:
+            file.write(f"-----------{time.strftime('%d-%m-%Y_%H-%M', time.localtime())}-----------\r")
             for log in self.server_logs:
                 file.write(f"{log}\r")
 
