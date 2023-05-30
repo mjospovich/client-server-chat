@@ -38,6 +38,7 @@ class Server:
         self.messages_received = []
         self.clients_connected = []
         self.len_clients_connected = 0
+        self.server_logs = []
 
     #*function that gets the password from encrypted file using key
     def get_password(self):
@@ -75,9 +76,12 @@ class Server:
     def send_msg(self, conn, msg):
         conn.send(msg.encode(self.FORMAT))
     
-    #* function for printing server messages
+    #* function for printing server messages and appends them to the list
     def server_log(self, tag, msg):
-        print(f"[{tag.upper()}] {msg}")
+        message = f"[{tag.upper()}] {msg}"
+        print(message)
+        self.server_logs.append(message)
+
 
     #*handling clients
     def handle_client(self, conn, addr):
@@ -269,6 +273,7 @@ class Server:
     #*shutting down the server
     def shutdown(self):
         self.save_data()
+        self.save_logs()
         self.server.close()
 
     #*saving data to file
@@ -282,6 +287,13 @@ class Server:
             with open(r"data\data.txt", "a") as file:
                 for msg in self.messages_received:
                     file.write(f"{msg}\r")
+
+    #*save server logs to file
+    def save_logs(self):
+        with open(r"data\logs.log", "a") as file:
+            for log in self.server_logs:
+                file.write(f"{log}\r")
+
 
     #*updating chat window
     def update_chat(self, msg, chat):
