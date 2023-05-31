@@ -229,7 +229,7 @@ class Server:
 
             except:
                 if "CHAT" in username:
-                    server_log("connecting error", f"Chat '{username}' window has lost connection.")
+                    server_log("connecting error", f"Chat '{username}' has been closed.")
                     self.clients_connected.remove((conn, addr, username, admin))
                     connected = False
                 else:
